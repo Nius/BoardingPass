@@ -41,19 +41,7 @@ function.
             margin:             0;
             padding:            8px;
         }
-        #numbox
-        {
-            background-color:   #000000;
-            color:              #8888FF;
-            border:             1px #555555 solid;
-            border-radius:      5px;
-            padding:            0.25em;
-
-            &::-webkit-inner-spin-button
-            {
-                display:            none;
-            }
-        }
+        
 
         #import-label
         {
@@ -133,12 +121,24 @@ function.
                     font-weight:    bold;
                     display:        table-cell;
                     vertical-align: middle;
+                    padding-top:    0.15em;
                 }
-                .setup-roster-switch,
+                .setup-roster-switch
+                {
+                    display:        table-cell;
+                    width:          3.3em;
+                }
                 .log-roster-save-button-wrapper
                 {
                     display:        table-cell;
                     text-align:     right;
+                }
+                .setup-roster-title-deny-all
+                {
+                    display:            table-cell;
+                    text-align:         right;
+                    font-variant-emoji: text;
+                    cursor:             pointer;
                 }
             }
 
@@ -161,6 +161,11 @@ function.
                     font-variant-emoji: text;
                     cursor:             pointer;
                 }
+
+                td.deny-button
+                {
+                    text-align:         right;
+                }
             }
         }
 
@@ -177,12 +182,22 @@ function.
                 font-size:      1.5em;
             }
 
-            input
+            input#numbox
             {
                 max-width:      35rem;
                 font-size:      5em;
                 text-align:     center;
                 margin-top:     0.5rem;
+                background-color:   #000000;
+                color:              #8888FF;
+                border:             1px #555555 solid;
+                border-radius:      5px;
+                padding:            0.25em;
+
+                &::-webkit-inner-spin-button
+                {
+                    display:            none;
+                }
             }
 
             #result-text
@@ -342,12 +357,6 @@ function.
         {
             border-radius:		50%;
         }
-        
-        .sliderLabelMono
-        {
-            position:			relative;
-            top:				0.125em;
-        }
     </style>
 
     <style type='text/css' name='Tab Navigation CSS'>
@@ -467,11 +476,14 @@ function.
 
                             var fullName = row[1].split(',');
                             var lastName = fullName[0].trim();
-                            var firstName = fullName[1].trim().split(' ')[0].trim();
+
+                            var firstNameSplat = fullName[1].trim().split(' ');
+                            var firstName = firstNameSplat[0].trim();
 
                             // Get the middle initial.
-                            firstName +=
-                                ' ' + fullName[1].trim().split(' ')[1].substr(0,1) + '.';
+                            if(firstNameSplat.length > 1)
+                                firstName +=
+                                    ' ' + firstNameSplat[1].substr(0,1) + '.';
 
                             var teacher = row[2].trim();
 
@@ -544,6 +556,12 @@ function.
 
                 assembleRostersForSetup();
             }
+        }
+
+        function toggleDenyAll(caller)
+        {
+            var callingTable = $(caller).parents('.setup-roster').find('.setup-roster-table > tbody a.deny');
+            $(callingTable).trigger('click');
         }
 
         function toggleDenyStudent(e)
@@ -643,7 +661,7 @@ function.
                         .addClass('deny')
                         .html('&#9940;')
                         .on('click',toggleDenyStudent);
-                    var cell_3 = $(document.createElement('td')).append(denyButton);
+                    var cell_3 = $(document.createElement('td')).addClass('deny-button').append(denyButton);
 
                     $(row).append(cell_0, cell_1, cell_2, cell_3);
 
@@ -988,14 +1006,14 @@ function.
         <div id='tab-setup-interior'>
             <div id='setup-roster-prototype' class='setup-roster'>
                 <div class='setup-roster-title'>
-                    <span class='setup-roster-title-name'></span>
                     <div class='setup-roster-switch'>
-                        <span class='sliderLabelMono'>Allow</span>
                         <label class='switch'>
                             <input type='checkbox' class='denyRosterToggle' title='Allow Roster' checked>
                             <span class='slider round'></span>
                         </label>
                     </div>
+                    <span class='setup-roster-title-name'></span>
+                    <span class='setup-roster-title-deny-all' onclick='toggleDenyAll(this)'>&#9940;</span>
                 </div>
                 <table class='setup-roster-table'>
                     <tbody class='setup-roster-table-body'>
